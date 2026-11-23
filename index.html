@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apex Detailing</title>
+<meta name="description" content="Detailing de supercoches. Desplázate para lavarlo.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600&display=swap">
+<style>
+:root{--red:#ff2a12;--gold:#ffb43a;--bg:#0b0c10;--fg:#fff}
+*{box-sizing:border-box;margin:0}
+html{background:var(--bg)}
+body{font-family:Inter,system-ui,sans-serif;color:var(--fg);background:var(--bg)}
+.track{height:500vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(120% 80% at 50% 30%,#232733 0%,#0b0c10 70%)}
+.lights{position:absolute;inset:0 0 55% 0;background:repeating-linear-gradient(100deg,transparent 0 90px,rgba(255,255,255,.09) 90px 94px);transform:perspective(600px) rotateX(55deg);transform-origin:top;opacity:.8}
+.floor{position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(#14161d,#07080b);box-shadow:0 -1px 0 rgba(255,255,255,.08)}
+.glow{position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 60%,#ffb43a 0%,#ff6a1a55 40%,transparent 70%);opacity:0;mix-blend-mode:screen}
+.car{position:absolute;left:50%;top:52%;width:min(1100px,104vw);transform:translate(-50%,-50%);will-change:transform}
+.car svg{display:block;width:100%;height:auto;overflow:visible}
+.car .dirty{position:absolute;inset:0;clip-path:inset(0 0 0 0)}
+.shadow{position:absolute;left:10%;right:10%;bottom:-2%;height:6%;background:radial-gradient(closest-side,#000a,transparent);filter:blur(6px)}
+.macro{position:absolute;inset:0;opacity:0;background:
+ radial-gradient(70% 90% at 30% 20%,#ff5a3a 0%,#e0140a 40%,#8a0500 100%)}
+.swirls{position:absolute;inset:-10%;opacity:.9;mix-blend-mode:overlay;
+ background:
+ repeating-radial-gradient(circle at 20% 30%,transparent 0 14px,rgba(255,255,255,.55) 15px 16px),
+ repeating-radial-gradient(circle at 75% 60%,transparent 0 22px,rgba(255,255,255,.5) 23px 24px),
+ repeating-radial-gradient(circle at 45% 85%,transparent 0 17px,rgba(0,0,0,.5) 18px 19px)}
+.sheen{position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 45%,transparent 60%);mix-blend-mode:soft-light}
+.bead{position:absolute;left:50%;top:55%;width:70px;height:70px;border-radius:50%;transform:translate(-50%,-50%) scale(0);
+ background:radial-gradient(circle at 35% 30%,#fff 0 6%,rgba(255,255,255,.35) 12%,rgba(255,150,130,.25) 55%,rgba(60,0,0,.6) 100%);
+ box-shadow:0 10px 18px rgba(0,0,0,.5),inset 0 -6px 10px rgba(255,255,255,.25)}
+.wipe{position:absolute;top:0;bottom:0;width:6px;left:0;background:linear-gradient(transparent,#fff 20%,#fff 80%,transparent);box-shadow:0 0 40px 12px rgba(255,255,255,.8);opacity:0}
+h2.cap{position:absolute;font-family:Anton,Impact,sans-serif;font-size:clamp(34px,7vw,84px);line-height:.95;text-transform:uppercase;letter-spacing:.01em;opacity:0;pointer-events:none;
+ background:linear-gradient(#fff 45%,var(--gold) 55%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 rgba(0,0,0,.5))}
+h2.cap span{display:block}
+#c1{left:5vw;bottom:12vh}#c2{right:5vw;bottom:12vh;text-align:right}#c3{left:5vw;bottom:12vh}#c4{right:5vw;bottom:12vh;text-align:right}#c5{left:5vw;bottom:12vh}
+.brand{position:absolute;top:22px;left:5vw;right:5vw;display:flex;justify-content:space-between;align-items:center;z-index:5;font-weight:600;letter-spacing:.14em;font-size:13px;text-transform:uppercase}
+.brand b{font-family:Anton;font-size:22px;letter-spacing:.08em}
+.cta{position:absolute;left:50%;top:22vh;transform:translateX(-50%) translateY(20px);opacity:0;text-align:center;z-index:4;pointer-events:none}
+.cta.on{pointer-events:auto}
+.cta p{color:#ffe6c4;margin-bottom:16px;font-size:clamp(15px,2.2vw,20px)}
+.cta a{display:inline-block;background:var(--red);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:999px;box-shadow:0 10px 30px #ff2a1260}
+.hint{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#fff9;z-index:5}
+.bar{position:absolute;left:0;top:0;height:3px;background:var(--red);width:0;z-index:6}
+.info{padding:90px 5vw;max-width:1000px;margin:auto;display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.info h3{font-family:Anton;font-size:28px;margin-bottom:8px;color:var(--gold)}
+.info p{color:#c9ccd6;line-height:1.6}
+footer{text-align:center;padding:40px 5vw 60px;color:#8b8f9c;font-size:13px}
+@media (prefers-reduced-motion:reduce){.track{height:auto}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<section class="track" id="track">
+ <div class="stage">
+  <div class="brand"><b>APEX</b><span>Detailing de supercoches</span></div>
+  <div class="lights"></div><div class="floor"></div><div class="glow" id="glow"></div>
+
+  <div class="car" id="car">
+   <div class="shadow"></div>
+   <svg viewBox="0 0 1000 360" aria-label="Supercoche rojo">
+    <defs>
+     <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a2e"/><stop offset=".5" stop-color="#e5160a"/><stop offset="1" stop-color="#7d0400"/></linearGradient>
+     <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b3140"/><stop offset="1" stop-color="#0b0d12"/></linearGradient>
+     <radialGradient id="rim" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#555"/><stop offset=".6" stop-color="#9aa0aa"/><stop offset="1" stop-color="#1a1a1a"/></radialGradient>
+     <path id="shape" d="M40 245 C40 215 70 205 130 198 L300 170 C350 130 420 100 520 98 C610 98 680 128 730 165 L880 185 C940 195 965 215 965 245 L965 262 L40 262Z"/>
+     <filter id="dirt" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".02 .06" numOctaves="4" seed="4" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .36  0 0 0 0 .22  0 0 0 0 .12  0 0 0 2.4 -.55" result="mud"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="9" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 .3  0 0 0 0 .18  0 0 0 0 .1  0 0 0 3 -1.2" result="spk"/>
+      <feMerge result="m"><feMergeNode in="mud"/><feMergeNode in="spk"/></feMerge>
+      <feComposite in="m" in2="SourceAlpha" operator="in"/>
+     </filter>
+     <clipPath id="clipShape"><use href="#shape"/></clipPath>
+    </defs>
+    <g id="clean">
+     <use href="#shape" fill="url(#body)"/>
+     <g clip-path="url(#clipShape)">
+      <path d="M300 172 C350 130 420 104 520 102 C600 102 660 125 715 165Z" fill="url(#glass)"/>
+      <path d="M60 215 C300 195 600 190 960 215" stroke="#fff" stroke-opacity=".35" stroke-width="3" fill="none"/>
+      <path d="M520 102 L520 168" stroke="#0007" stroke-width="3"/>
+      <path d="M330 200 C450 190 650 190 800 205 L760 232 C600 220 450 222 330 232Z" fill="#0004"/>
+      <ellipse cx="560" cy="150" rx="260" ry="12" fill="#fff" opacity=".12"/>
+     </g>
+     <rect x="40" y="258" width="925" height="12" rx="6" fill="#120000"/>
+     <g><circle cx="220" cy="262" r="58" fill="#0a0a0a"/><circle cx="220" cy="262" r="38" fill="url(#rim)"/><circle cx="220" cy="262" r="8" fill="#222"/>
+        <circle cx="790" cy="262" r="58" fill="#0a0a0a"/><circle cx="790" cy="262" r="38" fill="url(#rim)"/><circle cx="790" cy="262" r="8" fill="#222"/></g>
+     <path d="M900 205 L955 215 L955 228 L895 222Z" fill="#fff" opacity=".9"/>
+     <path d="M48 232 L90 226 L90 238 L48 242Z" fill="#ff9a8a"/>
+    </g>
+   </svg>
+   <div class="dirty" id="dirty">
+    <svg viewBox="0 0 1000 360"><use href="#shape" filter="url(#dirt)"/>
+     <use href="#shape" fill="#6b4b32" opacity=".35"/>
+     <circle cx="220" cy="262" r="58" fill="#4a3724"/><circle cx="790" cy="262" r="58" fill="#4a3724"/>
+    </svg>
+   </div>
+  </div>
+
+  <div class="macro" id="macro"><div class="swirls" id="swirls"></div><div class="sheen"></div><div class="bead" id="bead"></div></div>
+  <div class="wipe" id="wipe"></div>
+
+  <h2 class="cap" id="c1"><span>Bring it</span><span style="color:#d9812b;-webkit-text-fill-color:#d9812b">dirty.</span></h2>
+  <h2 class="cap" id="c2"><span>Scroll to</span><span>wash it</span></h2>
+  <h2 class="cap" id="c3"><span>Look</span><span>closer.</span></h2>
+  <h2 class="cap" id="c4"><span>Swirls out.</span><span>Glass on.</span></h2>
+  <h2 class="cap" id="c5"><span>Keys back.</span><span>Jaw drops.</span></h2>
+  <div class="cta" id="cta"><p>Corrección de pintura · Cerámico · Detailing interior</p><a href="mailto:hola@apexdetailing.example">Reservar mi coche</a></div>
+  <div class="hint" id="hint">Scroll ↓</div>
+ </div>
+</section>
+
+<section class="info">
+ <div><h3>Lavado de precisión</h3><p>Pre-lavado, descontaminación química y secado sin contacto. Cero marcas nuevas.</p></div>
+ <div><h3>Corrección de pintura</h3><p>Eliminamos swirls y micro-arañazos en varias fases hasta recuperar profundidad real.</p></div>
+ <div><h3>Recubrimiento cerámico</h3><p>Brillo espejo, efecto perla y protección durante años.</p></div>
+</section>
+<footer>© 2026 Apex Detailing · Web de ejemplo</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const seg=(p,a,b)=>clamp((p-a)/(b-a));
+const track=$('track'),car=$('car'),dirty=$('dirty'),wipe=$('wipe'),macro=$('macro'),
+ sw=$('swirls'),bead=$('bead'),glow=$('glow'),cta=$('cta'),bar=$('bar'),hint=$('hint');
+const caps=[1,2,3,4,5].map(i=>$('c'+i));
+// [aparece, desaparece]
+const ranges=[[-1,.2],[.2,.42],[.5,.62],[.64,.82],[.88,2]];
+function fade(el,p,[a,b]){
+  const i=seg(p,a,a+.04),o=1-seg(p,b-.04,b);
+  const v=Math.min(i,o);el.style.opacity=v;el.style.transform=`translateY(${(1-v)*24}px)`;
+}
+function update(){
+  const max=track.offsetHeight-innerHeight;
+  const p=clamp(-track.getBoundingClientRect().top/max);
+  bar.style.width=p*100+'%';hint.style.opacity=1-seg(p,0,.04);
+  // lavado: 0.2 -> 0.42
+  const w=seg(p,.2,.42);
+  dirty.style.clipPath=`inset(0 0 0 ${w*100}%)`;
+  const r=car.getBoundingClientRect();
+  wipe.style.left=(r.left+r.width*w)+'px';
+  wipe.style.opacity=w>0&&w<1?1:0;
+  // zoom: 0.46 -> 0.62
+  const z=seg(p,.46,.62);
+  const s=1+Math.pow(z,2)*7;
+  car.style.transform=`translate(-50%,-50%) scale(${s})`;
+  car.style.transformOrigin='42% 35%';
+  car.style.opacity=1-seg(p,.58,.64)*(1-seg(p,.86,.92));
+  // macro + swirls + bead
+  const m=seg(p,.58,.64)*(1-seg(p,.84,.88));
+  macro.style.opacity=m;
+  sw.style.opacity=.9*(1-seg(p,.66,.78));
+  bead.style.transform=`translate(-50%,-50%) scale(${seg(p,.76,.82)})`;
+  // final
+  const f=seg(p,.86,.95);
+  car.style.transform+=f?` scale(${1-f*0})`:'';
+  if(p>.86){car.style.transform='translate(-50%,-50%) scale(1)';car.style.transformOrigin='50% 50%'}
+  glow.style.opacity=f*.75;
+  cta.style.opacity=seg(p,.93,.99);cta.style.transform=`translateX(-50%) translateY(${(1-seg(p,.93,.99))*20}px)`;
+  cta.classList.toggle('on',p>.95);
+  caps.forEach((c,i)=>fade(c,p,ranges[i]));
+}
+addEventListener('scroll',update,{passive:true});addEventListener('resize',update);update();
+</script>
+</body>
+</html>
